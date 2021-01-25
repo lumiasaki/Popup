@@ -35,19 +35,25 @@ public enum Popup {
         
         public static let shared: Manager = Manager()
         
-        public var allTasks: [PopupTask] { queue.value.map { $0.base } }
+        public var allTasks: [PopupTask] {
+            let tasksInQueue = queue.value.map { $0.base }
+            
+            if let activeTask = activeTask {
+                return [activeTask] + tasksInQueue
+            }
+            
+            return tasksInQueue
+        }
         
         private var queue: Atomic<PriorityQueue<AnyPopupTask>> = Atomic(PriorityQueue())
         
-        private var activeTask: AnyPopupTask? { queue.value.peek() }
+        private var activeTask: AnyPopupTask?
         
         private(set) var state: State = .idle {
             willSet { print("popup manager state from \(state) to \(newValue)") }
         }
         
         public func add(task: PopupTask) {
-            attachCapabilitiesToTask(task)
-            
             queue.mutate { $0.push(AnyPopupTask(task)) }
             print("popup manager all tasks: \(String(describing: allTasks)))")
             
@@ -68,19 +74,24 @@ public enum Popup {
             transit(to: .active)
         }
         
-        private func attachCapabilitiesToTask(_ task: PopupTask) {
-            task.finishAction = taskFinishAction
-        }
-        
         // Capability
         
-        private func taskFinishAction(task: PopupTask) {
+        fileprivate func taskFinishAction(task: PopupTask) {
             guard let activeTask = activeTask, task === activeTask.base else {
                 return
             }
             
             transit(to: .handleDismiss)
         }
+    }
+}
+
+// MARK: - Extension on PopupTask
+
+public extension PopupTask {
+    
+    func finishAction(_ task: PopupTask) {
+        task.manager?.taskFinishAction(task: task)
     }
 }
 
@@ -136,10 +147,13 @@ extension Popup.Manager {
     
     private func handleToActive() {
         // if there is not any tasks in the queue, go back to `idle` state
-        guard let _ = activeTask else {
+        guard queue.value.count > 0 else {
             transit(to: .idle)
             return
         }
+        
+        // fetch one from queue
+        queue.mutate { self.activeTask = $0.pop() }
                 
         // otherwise, `show` the active task
         transit(to: .handleShow)
@@ -161,11 +175,11 @@ extension Popup.Manager {
         guard let activeTask = activeTask else {
             fatalError("transit to cancel but active task is nil")
         }
-                
-        // active task calls `cancel()`, should remove the task in the queue
-        queue.mutate { $0.remove(activeTask) }
         
         activeTask.didCanceled()
+        
+        // active task calls `cancel()`, should assign the self.activeTask to nil
+        self.activeTask = nil
         
         transit(to: .active)
     }
@@ -188,10 +202,9 @@ extension Popup.Manager {
         }
         
         activeTask.willDismiss()
-        
-        queue.mutate { let _ = $0.pop() }
-                
         activeTask.didDismiss()
+        
+        self.activeTask = nil
         
         transit(to: .active)
     }

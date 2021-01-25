@@ -9,13 +9,28 @@ import Foundation
 
 public protocol PopupTask: class, PopupTaskLifeCycle, CustomStringConvertible, CustomDebugStringConvertible {
     
-    var taskDescription: String { get }
+    var manager: Popup.Manager? { get set }
+    
+    /// custom description for a task
+    var taskDescription: String { get set }
+    
+    /// priority, ascend order
     var priority: Int { get }
+    
+    /// cancel flag, if a task wants to cancel itself, it could flag `isCanceled` true during `willShow()`
     var isCanceled: Bool { get set }
     
-    var finishAction: (PopupTask) -> Void { get set }
+    /// when the user interaction is done for the popup, it responsible for invoking this method to continue the loop
+    func finishAction(_ task: PopupTask)
     
+    /// a right place to show popup user interface, the task will not restrict the way how you show it
     func render()
+}
+
+extension PopupTask {
+    
+    public var description: String { taskDescription }
+    public var debugDescription: String { taskDescription }
 }
 
 public protocol PopupTaskLifeCycle {
@@ -36,6 +51,7 @@ public extension PopupTaskLifeCycle {
     func didDismiss() { }
 }
 
+/// Type erasure type for `PopupTask`
 public class AnyPopupTask: PopupTask {
     
     public let base: PopupTask
@@ -44,15 +60,23 @@ public class AnyPopupTask: PopupTask {
         self.base = base
     }
     
-    public var taskDescription: String { base.taskDescription }    
+    public weak var manager: Popup.Manager? {
+        get { base.manager }
+        set { base.manager = newValue }
+    }
+    
+    public var taskDescription: String {
+        get { base.taskDescription }
+        set { base.taskDescription = newValue }
+    }
     public var priority: Int { base.priority }
     public var isCanceled: Bool {
         get { base.isCanceled }
         set { base.isCanceled = newValue}
     }
-    public var finishAction: (PopupTask) -> Void {
-        get { base.finishAction }
-        set { base.finishAction = newValue }
+    
+    public func finishAction(_ task: PopupTask) {
+        base.finishAction(task)
     }
     
     public func render() {
