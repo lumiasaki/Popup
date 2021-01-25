@@ -9,6 +9,7 @@ import Foundation
 
 public protocol PopupTask: class, PopupTaskLifeCycle, CustomStringConvertible, CustomDebugStringConvertible {
     
+    /// a task keep a weak reference to its parent manager, the ownership should be `weak`
     var manager: Popup.Manager? { get set }
     
     /// custom description for a task
@@ -21,7 +22,7 @@ public protocol PopupTask: class, PopupTaskLifeCycle, CustomStringConvertible, C
     var isCanceled: Bool { get set }
     
     /// when the user interaction is done for the popup, it responsible for invoking this method to continue the loop
-    func finishAction(_ task: PopupTask)
+    func finish() throws
     
     /// a right place to show popup user interface, the task will not restrict the way how you show it
     func render()
@@ -75,8 +76,8 @@ public class AnyPopupTask: PopupTask {
         set { base.isCanceled = newValue}
     }
     
-    public func finishAction(_ task: PopupTask) {
-        base.finishAction(task)
+    public func finish() throws {
+        try base.finish()
     }
     
     public func render() {

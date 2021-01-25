@@ -12,6 +12,7 @@ public enum Popup {
     
     public final class Manager {
         
+        /// State for Popup Manager
         enum State {
             
             /// idle, means the queue is empty, when at least one task be added to the queue, the state will become active
@@ -33,13 +34,23 @@ public enum Popup {
             case handleDismiss
         }
         
+        /// Errors for Popup Manager
+        enum Error: Swift.Error {
+            
+            /// throwing this error while adding a task with an exists priority
+            case containsSamePriority
+            
+            /// throwing this error while trying to finish an inactive task
+            case finishInactiveTask
+        }
+        
         public static let shared: Manager = Manager()
         
         public var allTasks: [PopupTask] {
             let tasksInQueue = queue.value.map { $0.base }
             
             if let activeTask = activeTask {
-                return [activeTask] + tasksInQueue
+                return [activeTask.base] + tasksInQueue
             }
             
             return tasksInQueue
@@ -49,11 +60,20 @@ public enum Popup {
         
         private var activeTask: AnyPopupTask?
         
+        private var prioritySet: Set<Int> = Set()
+        
         private(set) var state: State = .idle {
             willSet { print("popup manager state from \(state) to \(newValue)") }
         }
         
-        public func add(task: PopupTask) {
+        public func add(task: PopupTask) throws {
+            guard !prioritySet.contains(task.priority) else {
+                throw Error.containsSamePriority
+            }
+            
+            task.manager = self
+            prioritySet.insert(task.priority)
+            
             queue.mutate { $0.push(AnyPopupTask(task)) }
             print("popup manager all tasks: \(String(describing: allTasks)))")
             
@@ -61,14 +81,14 @@ public enum Popup {
         }
         
         private func becomeActiveIfNeeded() {
-            // if the queue contains only one task, then the state becomes `active` from `idle`, otherwise, the state will not be changed
-            guard queue.value.count == 1 else {
+            // if the all tasks ( includes the active task ) contains only one task, then the state becomes `active` from `idle`, otherwise, the state will not be changed
+            guard allTasks.count == 1 else {
                 return
             }
                     
             // it must be `idle` in this scenario
             guard state == .idle else {
-                fatalError("the count of queue is 1 but state is not idle")
+                fatalError("the count of allTasks is 1 but state is not idle")
             }
             
             transit(to: .active)
@@ -76,9 +96,9 @@ public enum Popup {
         
         // Capability
         
-        fileprivate func taskFinishAction(task: PopupTask) {
+        fileprivate func taskFinishAction(task: PopupTask) throws {
             guard let activeTask = activeTask, task === activeTask.base else {
-                return
+                throw Error.finishInactiveTask
             }
             
             transit(to: .handleDismiss)
@@ -90,8 +110,8 @@ public enum Popup {
 
 public extension PopupTask {
     
-    func finishAction(_ task: PopupTask) {
-        task.manager?.taskFinishAction(task: task)
+    func finish() throws {
+        try self.manager?.taskFinishAction(task: self)
     }
 }
 
@@ -179,6 +199,7 @@ extension Popup.Manager {
         activeTask.didCanceled()
         
         // active task calls `cancel()`, should assign the self.activeTask to nil
+        prioritySet.remove(activeTask.priority)
         self.activeTask = nil
         
         transit(to: .active)
@@ -204,21 +225,9 @@ extension Popup.Manager {
         activeTask.willDismiss()
         activeTask.didDismiss()
         
+        prioritySet.remove(activeTask.priority)
         self.activeTask = nil
         
         transit(to: .active)
-    }
-}
-
-// MARK: - Objective-C Interoperability
-
-extension Popup.Manager {
-    
-    public func add(task: AnyObject) {
-        guard let task = task as? PopupTask else {
-            fatalError()
-        }
-        
-        add(task: task)
     }
 }
