@@ -26,9 +26,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Popup",
-            dependencies: ["SwiftPriorityQueue"]
-            exclude: ["Example"]
-        ),
+            dependencies: ["SwiftPriorityQueue"],
+            exclude: ["Example"]),
         .testTarget(
             name: "PopupTests",
             dependencies: ["Popup"]),
