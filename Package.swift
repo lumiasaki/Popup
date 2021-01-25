@@ -8,6 +8,7 @@ let package = Package(
     platforms: [
         .iOS(.v10)
     ],
+    exclude: ["Example"],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
