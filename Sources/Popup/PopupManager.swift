@@ -13,7 +13,7 @@ public enum Popup {
     public final class Manager {
         
         /// State for Popup Manager
-        enum State {
+        public enum State {
             
             /// idle, means the queue is empty, when at least one task be added to the queue, the state will become active
             case idle
@@ -35,7 +35,7 @@ public enum Popup {
         }
         
         /// Errors for Popup Manager
-        enum Error: Swift.Error {
+        public enum Error: Swift.Error {
             
             /// throwing this error while adding a task with an exists priority
             case containsSamePriority

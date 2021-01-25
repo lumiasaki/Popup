@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,8 @@
 		CE7C358A25BEC25B0094570C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE7C358825BEC25B0094570C /* Main.storyboard */; };
 		CE7C358C25BEC25E0094570C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE7C358B25BEC25E0094570C /* Assets.xcassets */; };
 		CE7C358F25BEC25E0094570C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE7C358D25BEC25E0094570C /* LaunchScreen.storyboard */; };
+		CE7C359925BEC4600094570C /* Popup in Frameworks */ = {isa = PBXBuildFile; productRef = CE7C359825BEC4600094570C /* Popup */; };
+		CE7C35D425BECEAE0094570C /* ExamplePopupTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C35D325BECEAE0094570C /* ExamplePopupTask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,7 @@
 		CE7C358B25BEC25E0094570C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE7C358E25BEC25E0094570C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE7C359025BEC25E0094570C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE7C35D325BECEAE0094570C /* ExamplePopupTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplePopupTask.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7C359925BEC4600094570C /* Popup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,6 +60,7 @@
 		CE7C358125BEC25B0094570C /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				CE7C35C525BECDA00094570C /* Popups */,
 				CE7C358225BEC25B0094570C /* AppDelegate.swift */,
 				CE7C358425BEC25B0094570C /* SceneDelegate.swift */,
 				CE7C358625BEC25B0094570C /* ViewController.swift */,
@@ -65,6 +70,14 @@
 				CE7C359025BEC25E0094570C /* Info.plist */,
 			);
 			path = Example;
+			sourceTree = "<group>";
+		};
+		CE7C35C525BECDA00094570C /* Popups */ = {
+			isa = PBXGroup;
+			children = (
+				CE7C35D325BECEAE0094570C /* ExamplePopupTask.swift */,
+			);
+			path = Popups;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -83,6 +96,9 @@
 			dependencies = (
 			);
 			name = Example;
+			packageProductDependencies = (
+				CE7C359825BEC4600094570C /* Popup */,
+			);
 			productName = Example;
 			productReference = CE7C357F25BEC25B0094570C /* Example.app */;
 			productType = "com.apple.product-type.application";
@@ -110,6 +126,9 @@
 				Base,
 			);
 			mainGroup = CE7C357625BEC25B0094570C;
+			packageReferences = (
+				CE7C359725BEC4600094570C /* XCRemoteSwiftPackageReference "Popup" */,
+			);
 			productRefGroup = CE7C358025BEC25B0094570C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -137,6 +156,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7C35D425BECEAE0094570C /* ExamplePopupTask.swift in Sources */,
 				CE7C358725BEC25B0094570C /* ViewController.swift in Sources */,
 				CE7C358325BEC25B0094570C /* AppDelegate.swift in Sources */,
 				CE7C358525BEC25B0094570C /* SceneDelegate.swift in Sources */,
@@ -341,6 +361,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE7C359725BEC4600094570C /* XCRemoteSwiftPackageReference "Popup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lumiasaki/Popup.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE7C359825BEC4600094570C /* Popup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE7C359725BEC4600094570C /* XCRemoteSwiftPackageReference "Popup" */;
+			productName = Popup;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE7C357725BEC25B0094570C /* Project object */;
 }
