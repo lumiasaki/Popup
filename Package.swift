@@ -8,7 +8,6 @@ let package = Package(
     platforms: [
         .iOS(.v10)
     ],
-    exclude: ["Example"],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
@@ -28,7 +27,7 @@ let package = Package(
         .target(
             name: "Popup",
             dependencies: ["SwiftPriorityQueue"],
-            exclude: ["Example"]),
+            path: "Sources"),
         .testTarget(
             name: "PopupTests",
             dependencies: ["Popup"]),
