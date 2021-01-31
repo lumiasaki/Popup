@@ -36,7 +36,7 @@ class ExamplePopupTask: PopupTask {
     func render() {
         let alertViewController = UIAlertController(title: taskDescription, message: nil, preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .default) { _ in
-            try? self.finish()
+            try? self.resignFocus()
         }
         
         alertViewController.addAction(action)

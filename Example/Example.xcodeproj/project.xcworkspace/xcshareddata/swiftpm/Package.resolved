@@ -5,9 +5,9 @@
         "package": "Popup",
         "repositoryURL": "https://github.com/lumiasaki/Popup.git",
         "state": {
-          "branch": "main",
-          "revision": "a63e2fb37c5b96d635c650784c7b45e479b2140f",
-          "version": null
+          "branch": null,
+          "revision": "7158dde72df284e430afbdd26e4a313b14f75390",
+          "version": "0.2.0"
         }
       },
       {

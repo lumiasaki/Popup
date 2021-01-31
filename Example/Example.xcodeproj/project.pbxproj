@@ -367,8 +367,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/lumiasaki/Popup.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
