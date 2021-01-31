@@ -27,7 +27,7 @@ final class PopupTests: XCTestCase {
         XCTAssertTrue(manager.allTasks.first?.taskDescription == identifier)
         XCTAssertTrue(task.state == .show)
         
-        XCTAssertNoThrow(try task.finish())
+        XCTAssertNoThrow(try task.resignFocus())
         
         XCTAssertTrue(task.state == .dismissed)
         
@@ -56,10 +56,10 @@ final class PopupTests: XCTestCase {
         
         XCTAssertNoThrow(try manager.add(task: task1))
         
-        XCTAssertNoThrow(try task1.finish())
+        XCTAssertNoThrow(try task1.resignFocus())
         
         XCTAssertNoThrow(try manager.add(task: task1))
-        XCTAssertNoThrow(try task2.finish())
+        XCTAssertNoThrow(try task2.resignFocus())
     }
     
     func testPriority() {
@@ -109,13 +109,13 @@ final class PopupTests: XCTestCase {
         XCTAssertEqual(task1.state, .show)
         XCTAssertEqual(task2.state, .idle)
         
-        XCTAssertNoThrow(try task1.finish())
+        XCTAssertNoThrow(try task1.resignFocus())
         
         XCTAssertEqual(task1.state, .dismissed)
         XCTAssertEqual(task2.state, .show)
         XCTAssertTrue(manager.allTasks.count == 1)
         
-        XCTAssertNoThrow(try task2.finish())
+        XCTAssertNoThrow(try task2.resignFocus())
         
         XCTAssertEqual(task2.state, .dismissed)
         XCTAssertTrue(manager.allTasks.count == 0)
@@ -138,7 +138,7 @@ final class PopupTests: XCTestCase {
         XCTAssertEqual(task2.state, .idle)
         XCTAssertEqual(task3.state, .idle)
         
-        XCTAssertNoThrow(try task1.finish())
+        XCTAssertNoThrow(try task1.resignFocus())
         
         XCTAssertTrue(manager.allTasks.count == 1)
         
@@ -148,11 +148,11 @@ final class PopupTests: XCTestCase {
         
         var error: Error?
         
-        XCTAssertThrowsError(try task2.finish()) { error = $0 }
+        XCTAssertThrowsError(try task2.resignFocus()) { error = $0 }
         
         XCTAssertEqual(error as? Popup.Manager.Error, .finishInactiveTask)
         
-        XCTAssertNoThrow(try task3.finish())
+        XCTAssertNoThrow(try task3.resignFocus())
         
         XCTAssertTrue(manager.allTasks.count == 0)
     }

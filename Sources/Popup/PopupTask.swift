@@ -21,8 +21,8 @@ public protocol PopupTask: class, PopupTaskLifeCycle, CustomStringConvertible, C
     /// cancel flag, if a task wants to cancel itself, it could flag `isCanceled` true during `willShow()`
     var isCanceled: Bool { get set }
     
-    /// when the user interaction is done for the popup, it responsible for invoking this method to continue the loop
-    func finish() throws
+    /// when the user interaction is done for the popup, its responsibility is invoking to continue the loop
+    func resignFocus() throws
     
     /// a right place to show popup user interface, the task will not restrict the way how you show it
     func render()
@@ -76,8 +76,8 @@ public class AnyPopupTask: PopupTask {
         set { base.isCanceled = newValue}
     }
     
-    public func finish() throws {
-        try base.finish()
+    public func resignFocus() throws {
+        try base.resignFocus()
     }
     
     public func render() {

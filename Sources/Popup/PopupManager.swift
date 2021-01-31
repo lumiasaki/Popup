@@ -27,10 +27,10 @@ public enum Popup {
             /// current active task assign true to the `isCanceled` flag, the state will go to `active` as well
             case handleCancel
             
-            /// the task is in process, waiting for `finishAction()` calls from the task
+            /// the task is in process, waiting for `resignFocus()` calls from the task
             case inProgress
             
-            /// when the active task calls `finishAction()`, the state will become `handleDismiss`
+            /// when the active task calls `resignFocus()`, the state will become `handleDismiss`
             case handleDismiss
         }
         
@@ -96,7 +96,7 @@ public enum Popup {
         
         // Capability
         
-        fileprivate func taskFinishAction(task: PopupTask) throws {
+        fileprivate func taskResignFocusAction(task: PopupTask) throws {
             guard let activeTask = activeTask, task === activeTask.base else {
                 throw Error.finishInactiveTask
             }
@@ -110,8 +110,8 @@ public enum Popup {
 
 public extension PopupTask {
     
-    func finish() throws {
-        try self.manager?.taskFinishAction(task: self)
+    func resignFocus() throws {
+        try self.manager?.taskResignFocusAction(task: self)
     }
 }
 
