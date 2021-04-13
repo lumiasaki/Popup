@@ -157,4 +157,57 @@ final class PopupTests: XCTestCase {
         XCTAssertTrue(manager.allTasks.count == 0)
     }
     
+    func testConstantTimeIntervalDelayCase() {
+        let task1 = TestPopupTask(priority: 0, description: "Popup 1")
+        let task2 = TestPopupTask(priority: 1, description: "Popup 2")
+        
+        let configuration = Configuration.init(timeInterval: .constant(seconds: 3))
+        
+        manager.configuration = configuration
+        
+        XCTAssertNoThrow(try manager.add(task: task1))
+        XCTAssertNoThrow(try manager.add(task: task2))
+                
+        let startTimestamp = Date()
+        XCTAssertNoThrow(try task1.resignFocus())
+        
+        let expectation = XCTestExpectation()
+        task2.onShow = {
+            let endTimestamp = Date()
+                        
+            XCTAssertTrue(endTimestamp.timeIntervalSince(startTimestamp) <= fabs(3.2))  // DispatchQueue.main.after() is not very accurate, + 0.2 as additional space
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10)
+    }
+    
+    func testRandomTimeIntervalDelayCase() {
+        let task1 = TestPopupTask(priority: 0, description: "Popup 1")
+        let task2 = TestPopupTask(priority: 1, description: "Popup 2")
+        
+        let configuration = Configuration.init(timeInterval: .random(lower: 1, upper: 3))
+        
+        manager.configuration = configuration
+        
+        XCTAssertNoThrow(try manager.add(task: task1))
+        XCTAssertNoThrow(try manager.add(task: task2))
+                
+        let startTimestamp = Date()
+        XCTAssertNoThrow(try task1.resignFocus())
+        
+        let expectation = XCTestExpectation()
+        task2.onShow = {
+            let endTimestamp = Date()
+                        
+            XCTAssertTrue(endTimestamp.timeIntervalSince(startTimestamp) <= 3.2)  // DispatchQueue.main.after() is not very accurate, + 0.2 as additional delay
+            XCTAssertTrue(endTimestamp.timeIntervalSince(startTimestamp) >= 1)
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10)
+    }
+    
 }

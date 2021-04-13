@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 import Popup
 
 class TestPopupTask: PopupTask {
@@ -28,6 +27,8 @@ class TestPopupTask: PopupTask {
     
     var state: State = .idle
     
+    var onShow: (() -> Void)?
+    
     init(priority: Int, description: String) {
         self.priority = priority
         self.taskDescription = description
@@ -39,6 +40,10 @@ class TestPopupTask: PopupTask {
 }
 
 extension TestPopupTask {
+    
+    func didShow() {
+        onShow?()
+    }
     
     func didCanceled() {
         state = .canceled

@@ -43,9 +43,11 @@ public enum Popup {
             /// throwing this error while trying to finish an inactive task
             case finishInactiveTask
         }
-        
+                
+        /// Shared instance for Popup system
         public static let shared: Manager = Manager()
-        
+                
+        /// For Retrieving all exist tasks in the Popup
         public var allTasks: [PopupTask] {
             let tasksInQueue = queue.value.map { $0.base }
             
@@ -55,6 +57,9 @@ public enum Popup {
             
             return tasksInQueue
         }
+        
+        /// Configuration of the Popup manager instance
+        public var configuration: Configuration = .shared
         
         private var queue: Atomic<PriorityQueue<AnyPopupTask>> = Atomic(PriorityQueue())
         
@@ -86,9 +91,10 @@ public enum Popup {
                 return
             }
                     
-            // it must be `idle` in this scenario
+            // it must be `idle` in this scenario if the progress is going to be active state
+            // NOTE: if the timeInterval in the configuration is not zero with constant, the state here will not be idle because of the delay
             guard state == .idle else {
-                fatalError("the count of allTasks is 1 but state is not idle")
+                return
             }
             
             transit(to: .active)
@@ -228,6 +234,30 @@ extension Popup.Manager {
         prioritySet.remove(activeTask.priority)
         self.activeTask = nil
         
-        transit(to: .active)
+        // In order to reduce the noise for client users, breakup the subsequent pop-ups with a configured time interval
+        breakupSubsequentPopups(with: configuration.timeInterval) { self.transit(to: .active) }
+    }
+}
+
+// MARK: - Subsequent Popups Breakup
+
+extension Popup.Manager {
+        
+    private func breakupSubsequentPopups(with timeInterval: Configuration.TimeInterval, block: @escaping () -> Void) {
+        var delay = Double(0)
+        
+        switch timeInterval {
+        case .constant(let seconds):
+            delay = seconds
+        case .random(let lower, let upper):
+            delay = Double.random(in: lower ... upper)
+        }
+        
+        guard delay != 0 else {
+            block()
+            return
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: block)
     }
 }
