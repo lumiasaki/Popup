@@ -10,7 +10,7 @@ This framework currently supports SPM, you can simply add a dependency on this f
 
 ## Design details
 
-![StateMachine](https://imgur.com/download/VfElE5i)
+![StateMachine](https://user-images.githubusercontent.com/6101691/124080913-7abe6f80-da7d-11eb-9b20-68f7710df04e.png)
 
 Popup is a very tiny, and simple core logic of the tool library, because the design of the beginning to consider the view level to manage all the existing pop-ups, for the project being developed may be a very difficult thing, so the beginning of the positioning itself as a "pop-up task" manager. In fact, there is not any mandatory requirements on how popups are displayed on the View, and since all popup tasks are managed according to the priority, it is actually very lightweight to insert code to transform the old code to be managed by the popup queue and solve the conflicts between popups.
 
